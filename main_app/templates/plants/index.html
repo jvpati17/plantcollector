@@ -5,11 +5,14 @@
 
 {% for plant in plants %}
   <div class="card">
-    <a href="/plants/{{ plant.id }}"></a>
+    <a href="{% url 'detail' plant.id %}">
     <div class="card-content">
-      <span class="card-title">{{ plant.name }}</span>
-      <p>Species: {{ plant.species }}</p>
+      <span class="card-title">{{ plant.species }}</span>
+      <p>Genus: {{ plant.genus }}</p>
+      <p>Family: {{ plant.family }}</p>
+      <p>Common Name: {{ plant.common_name }}</p>
       <p>Description: {{ plant.description | linebreaks }}</p>
+      <p>My Specimen: {{ status.state }} {{ status.status_log | linebreaks }}</p>
     </div>
    </a>
   </div>

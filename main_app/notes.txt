@@ -1,0 +1,25 @@
+<div class="card">
+  <div class="card-content">
+    <span class="card-title">{{ plant.name }}</span>
+    <p>Species: {{ plant.species }}</p>
+    <p>Description: {{ plant.description | linebreaks }}</p>
+  </div>
+  <div class="card-action">
+    <a href="{% url 'plants_update' plant.id %}">Edit</a>
+    <a href="{% url 'plants_delete' plant.id %}">Delete</a>
+  </div>
+</div>
+
+*reevised model
+
+class Plant(models.Model):
+    species = models.CharField(max_length=100)
+    common_name = models.CharField(max_length=100)
+    genus = models.CharField(max_length=100)
+    family = models.CharField(max_length=100)
+    description = models.TextField(max_length=500)
+
+    majestic - Cross pollinated with Verrucosum and Mamei this rare hybrid is know for it's red markings and silver variegation.
+    verru - Native to several South American countries this climbing plant prefers cooler temperature and high humidity. It is recognized by it's pillowy heart shaped,  velvet leaves and striking red markings on it's back.
+
+    action="{% url 'add_watered' plant.id %}"

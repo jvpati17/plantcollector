@@ -3,12 +3,142 @@
 
 <h1>Plant Details</h1>
 
-<div class="card">
-  <div class="card-content">
-    <span class="card-title">{{ plant.name }}</span>
-    <p>Species: {{ plant.species }}</p>
-    <p>Description: {{ plant.description | linebreaks }}</p>
+
+<div class="row">
+    <div class="col s6">
+        <div class="card">
+            <div class="card-content">
+              <span class="card-title">{{ plant.species }}</span>
+              <p>Genus: {{ plant.genus }}</p>
+              <p>Family: {{ plant.family }}</p>
+              <p>Common Name: {{ plant.common_name }}</p>
+              <p>Description: {{ plant.description | linebreaks }}</p>
+            </div>
+            <div class="card-action">
+              <a href="{% url 'plants_update' plant.id %}">Edit</a>
+              <a href="{% url 'plants_delete' plant.id %}">Delete</a>
+            </div>
+          </div>
+    </div>
+    <div class="col s6">
+        <form action="{% url 'add_status' plant.id %}" method="POST">
+            {% csrf_token %}
+            {{ status_form.as_p }}
+            <input type="submit" class="btn" value="Add Status">
+        </form>
+            <br>
+            <table class="striped">
+                <thead>
+                    <tr><th>Current State</th><th>Leaf Count</th></tr>
+                </thead>
+                <tbody>
+                    {% for status in plant.status_set.all %}
+                    <tr>
+                      <td>{{status.get_state_display}}</td>
+                      <td>{{status.no_of_leaves}}</td>
+                    </tr>
+                    <tr><th>Status Log</th><th>Date</th></tr>
+                    <tr>
+                        <td>{{ status.status_log }}</td>
+                        <td>{{status.date}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+        <form action="{% url 'add_watered' plant.id %}" method="POST">
+            {% csrf_token %}
+            {{ watered_form.as_p }}
+            <input type="submit" class="btn" value="Add Watered">
+        </form>
+        <br>
+        {% if plant.watered_today %}
+        <div class="card-panel teal-text center-align">Well done! {{ plant.species }} will live another day!</div>
+        {% else %}
+        <div class="card-panel red-text center-align">Attention: {{ plant.species }} might be thirsty.</div>
+        {% endif %}
+        <table class="striped">
+            <thead>
+                <tr><th>Watering Log</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+                {% for watered in plant.watered_set.all %}
+                <tr>
+                  <td>{{watered.get_fed_display}}</td>
+                  <td>{{watered.date}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr>
+<div class="row">
+  <div class="col s6">
+    <h5>{{ plant.species }}'s Current Pot and Growing Medium</h5>
+    {% if plant.pots.count %}
+      {% for pot in plant.pots.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+               <span style="vessel: {{ pot.vessel }}">{{ pot.vessel }}</span> with {{ pot.medium }}
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'unassoc_pot' plant.id pot.id %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn">Remove</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No Permanent Pot</h5>
+    {% endif %}
+  </div>
+  <div class="col s6">
+    <h5>Available Pots</h5>
+    {% if pots.count %}
+      {% for pot in pots.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              <span style="vessel: {{ pot.vessel }}">{{ pot.vessel }}</span> with {{ pot.medium }}
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'assoc_pot' plant.id pot.id %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>{{plant.species}} Already Has All Pots Available</h5>
+    {% endif %}
   </div>
 </div>
+  
+  
+
+<script>
+    const dateEl = document.getElementById('id_date');
+    M.Datepicker.init(dateEl, {
+        format: 'yyyy-mm-dd',
+        defaultDate: new Date(),
+        setDefaultDate: true,
+        autoclose: true
+    });
+
+    const selectEl = document.getElementById('id_fed', 'id_states');
+    M.FormSelect.init(selectEl);
+
+   
+    
+    
+
+</script>
 
 {% endblock %}
